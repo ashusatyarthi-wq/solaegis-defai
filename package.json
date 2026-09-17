@@ -1,0 +1,43 @@
+﻿{
+  "name": "solaegis-defai",
+  "version": "1.0.0",
+  "description": "Autonomous Multi-Chain AI Agent Risk & Execution Protocol for Solana & DeFi with Model Context Protocol (MCP)",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "bin": {
+    "solaegis": "./bin/solaegis.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "start": "tsx src/index.ts",
+    "mcp": "tsx src/mcp/server.ts",
+    "test": "vitest run",
+    "test:coverage": "vitest run --coverage"
+  },
+  "keywords": [
+    "solana",
+    "defai",
+    "mcp",
+    "model-context-protocol",
+    "ai-agent",
+    "risk-management",
+    "colosseum",
+    "defi",
+    "hyperliquid"
+  ],
+  "author": "Nitesh Satyarthi (ashusatyarthi-wq)",
+  "license": "MIT",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.5.0",
+    "@solana/web3.js": "^1.95.8",
+    "axios": "^1.7.9",
+    "dotenv": "^16.4.7",
+    "zod": "^3.24.1"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.1",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.2",
+    "vitest": "^2.1.8"
+  }
+}
