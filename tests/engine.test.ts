@@ -1,4 +1,4 @@
-﻿import { describe, it, expect } from "vitest";
+import { describe, it, expect } from "vitest";
 import { RiskMath } from "../src/engine/risk_math.js";
 import { MonteCarloSimulator } from "../src/engine/monte_carlo.js";
 import { CircuitBreaker } from "../src/engine/circuit_breaker.js";
@@ -79,5 +79,17 @@ describe("Autonomous Circuit Breaker Sentinel", () => {
     expect(status.isTripped).toBe(true);
     expect(status.severity).toBe("CRITICAL_HALT");
     expect(status.suggestedAction).toBe("EMERGENCY_DELEVERAGE");
+  });
+});
+
+describe("Pyth Network Real-Time Oracle", () => {
+  it("should fetch valid price data with confidence intervals", async () => {
+    const { PythOracleConnector } = await import("../src/connectors/pyth.js");
+    const pyth = new PythOracleConnector();
+    const data = await pyth.getLatestPrice("SOL");
+    expect(data.symbol).toBe("SOL");
+    expect(data.price).toBeGreaterThan(0);
+    expect(data.confidence).toBeGreaterThanOrEqual(0);
+    expect(data.publishTime).toBeGreaterThan(0);
   });
 });

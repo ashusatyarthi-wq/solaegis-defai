@@ -1,4 +1,4 @@
-﻿import { Server } from "@modelcontextprotocol/sdk/server/index.js";
+import { Server } from "@modelcontextprotocol/sdk/server/index.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { CallToolRequestSchema, ListToolsRequestSchema } from "@modelcontextprotocol/sdk/types.js";
 import { RiskMath, PositionRiskConfig } from "../engine/risk_math.js";
@@ -6,6 +6,7 @@ import { MonteCarloSimulator, SimulationParams } from "../engine/monte_carlo.js"
 import { CircuitBreaker, MarketTelemetry } from "../engine/circuit_breaker.js";
 import { SolanaConnector } from "../connectors/solana.js";
 import { HyperliquidConnector } from "../connectors/hyperliquid.js";
+import { PythOracleConnector } from "../connectors/pyth.js";
 
 const server = new Server(
   {
@@ -21,6 +22,7 @@ const server = new Server(
 
 const solana = new SolanaConnector();
 const hyperliquid = new HyperliquidConnector();
+const pyth = new PythOracleConnector();
 const circuitBreaker = new CircuitBreaker();
 
 server.setRequestHandler(ListToolsRequestSchema, async () => {
@@ -95,6 +97,17 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
             coin: { type: "string", description: "Asset symbol (e.g. SOL, BTC, ETH)" }
           },
           required: ["coin"]
+        }
+      },
+      {
+        name: "solaegis_get_pyth_oracle",
+        description: "Queries real-time Pyth Network Hermes oracle price feed, confidence interval, and publication timestamp for sub-second verification.",
+        inputSchema: {
+          type: "object",
+          properties: {
+            symbol: { type: "string", description: "Asset ticker (e.g. SOL, BTC, ETH)" }
+          },
+          required: ["symbol"]
         }
       }
     ]
@@ -206,6 +219,19 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
           {
             type: "text",
             text: JSON.stringify(perpContext, null, 2)
+          }
+        ]
+      };
+    }
+
+    if (name === "solaegis_get_pyth_oracle") {
+      const symbol = String(args?.symbol || "SOL");
+      const priceData = await pyth.getLatestPrice(symbol);
+      return {
+        content: [
+          {
+            type: "text",
+            text: JSON.stringify(priceData, null, 2)
           }
         ]
       };

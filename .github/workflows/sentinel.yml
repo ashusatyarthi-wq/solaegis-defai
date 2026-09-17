@@ -1,0 +1,38 @@
+﻿name: SolAegis 24/7 Autonomous Sentinel
+
+on:
+  schedule:
+    # Run every 30 minutes
+    - cron: '*/30 * * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  run-sentinel:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'npm'
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Execute Sentinel Risk Cycle
+        run: npx tsx src/sentinel_runner.ts
+
+      - name: Commit Updated Risk Telemetry
+        run: |
+          git config user.name "SolAegis-Autonomous-Sentinel[bot]"
+          git config user.email "sentinel@solaegis.network"
+          git add sentinel_state.json
+          git diff --quiet && git diff --staged --quiet || git commit -m "Auto-sentinel: update SolAegis risk telemetry [skip ci]"
+          git push origin main

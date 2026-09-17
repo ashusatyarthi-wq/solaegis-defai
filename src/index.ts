@@ -3,8 +3,9 @@ import { MonteCarloSimulator } from "./engine/monte_carlo.js";
 import { CircuitBreaker } from "./engine/circuit_breaker.js";
 import { SolanaConnector } from "./connectors/solana.js";
 import { HyperliquidConnector } from "./connectors/hyperliquid.js";
+import { PythOracleConnector } from "./connectors/pyth.js";
 
-export { RiskMath, MonteCarloSimulator, CircuitBreaker, SolanaConnector, HyperliquidConnector };
+export { RiskMath, MonteCarloSimulator, CircuitBreaker, SolanaConnector, HyperliquidConnector, PythOracleConnector };
 
 async function runAutonomousDiagnostic() {
   console.log("==================================================================");
@@ -67,11 +68,15 @@ async function runAutonomousDiagnostic() {
   console.log("   - Trigger Reasons:", testCrash.reasons.join(" | "));
 
   // 5. Connectors Check
-  console.log("\n>> [5/5] Checking Multi-Chain Connectors (Solana + Hyperliquid)...");
+  console.log("\n>> [5/5] Checking Multi-Chain Connectors (Solana + Hyperliquid + Pyth)...");
   const hl = new HyperliquidConnector();
   const perpCtx = await hl.getPerpContext("SOL");
   console.log("   - Hyperliquid SOL Mark Price:", `$${perpCtx?.markPx}`);
   console.log("   - 8h Funding Rate:", perpCtx?.fundingRate);
+
+  const pyth = new PythOracleConnector();
+  const pythPrice = await pyth.getLatestPrice("SOL");
+  console.log("   - Pyth Hermes Real-Time SOL Price:", `$${pythPrice.price} (conf ±$${pythPrice.confidence})`);
 
   console.log("\n==================================================================");
   console.log("  All SolAegis Engine subsystems verified and operational!");
