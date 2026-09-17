@@ -1,4 +1,4 @@
-﻿import { RiskMath } from "./engine/risk_math.js";
+import { RiskMath } from "./engine/risk_math.js";
 import { MonteCarloSimulator } from "./engine/monte_carlo.js";
 import { CircuitBreaker } from "./engine/circuit_breaker.js";
 import { SolanaConnector } from "./connectors/solana.js";
@@ -79,6 +79,7 @@ async function runAutonomousDiagnostic() {
 }
 
 // Run CLI diagnostic if directly executed
-if (import.meta.url === `file://${process.argv[1]}`) {
+const isDirectCli = process.argv[1]?.replace(/\\/g, "/").includes("src/index") || process.argv[1]?.replace(/\\/g, "/").includes("dist/index");
+if (isDirectCli || !process.env.VITEST) {
   runAutonomousDiagnostic().catch(console.error);
 }
