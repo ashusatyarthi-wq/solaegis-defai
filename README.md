@@ -1,4 +1,4 @@
-﻿# 🛡️ SolAegis DeFAI
+# 🛡️ SolAegis DeFAI
 > **Autonomous Multi-Chain AI Agent Risk & Execution Protocol for Solana & DeFi**  
 > *Targeting the Colosseum Crypto World\'s Fair 2026 ($840,000 Prize Pool | $15,000 Project Awards)*
 
@@ -6,6 +6,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
 [![Protocol](https://img.shields.io/badge/Protocol-Model%20Context%20Protocol%20(MCP)-9945FF)](https://modelcontextprotocol.io)
 [![Solana](https://img.shields.io/badge/Chain-Solana%20%7C%20Hyperliquid-14F195)](https://solana.com)
+[![Sponsor](https://img.shields.io/badge/Sponsor-%E2%9D%A4-pink.svg?logo=GitHub&logoColor=white)](https://github.com/sponsors/ashusatyarthi-wq)
 
 ---
 
@@ -113,3 +114,14 @@ Open `web/index.html` in any modern browser or visit the live deployment at:
 - **Repository**: [https://github.com/ashusatyarthi-wq/solaegis-defai](https://github.com/ashusatyarthi-wq/solaegis-defai)
 - **Author**: Nitesh Satyarthi (`ashusatyarthi-wq` | `ashusatyarthi@gmail.com`)
 - **License**: MIT
+
+---
+
+## 💖 Sponsor & Back SolAegis Development
+If you find SolAegis DeFAI valuable for protecting your autonomous agents or Solana protocols, consider supporting its open-source development:
+- **GitHub Sponsors**: [https://github.com/sponsors/ashusatyarthi-wq](https://github.com/sponsors/ashusatyarthi-wq)
+- **Sponsorship Tiers**:
+  - **Supporter ($5 - $15/mo)**: Supporter badge and recognition in release notes.
+  - **DeFAI Protocol Integration ($50 - $100/mo)**: Priority issue triage and risk model consultation.
+  - **Custom Vault & Enterprise Security ($500+ one-time / mo)**: Custom Anchor invariant verification and dedicated MCP connectors for your trading fund or protocol.
+
