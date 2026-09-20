@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Virtual Survival Engine | Autonomous US Equities Cloud Quant Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-base: #0a0d14;
+      --bg-card: rgba(16, 22, 34, 0.75);
+      --bg-card-hover: rgba(22, 30, 48, 0.9);
+      --border-color: rgba(255, 255, 255, 0.08);
+      --border-accent: rgba(0, 255, 178, 0.25);
+      --text-primary: #f1f5f9;
+      --text-secondary: #94a3b8;
+      --text-muted: #64748b;
+      --accent-green: #00ffb2;
+      --accent-red: #ff3366;
+      --accent-cyan: #00d4ff;
+      --accent-yellow: #fbbf24;
+      --accent-purple: #a855f7;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg-base);
+      background-image: 
+        radial-gradient(at 0% 0%, rgba(0, 212, 255, 0.08) 0px, transparent 50%),
+        radial-gradient(at 100% 100%, rgba(0, 255, 178, 0.06) 0px, transparent 50%);
+      color: var(--text-primary);
+      font-family: 'Inter', sans-serif;
+      min-height: 100vh;
+      padding: 24px;
+      line-height: 1.5;
+    }
+
+    .container {
+      max-width: 1240px;
+      margin: 0 auto;
+    }
+
+    header {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 24px;
+      margin-bottom: 28px;
+      border-bottom: 1px solid var(--border-color);
+      gap: 16px;
+    }
+
+    .brand-title {
+      font-size: 24px;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .badge-cloud {
+      background: rgba(0, 255, 178, 0.12);
+      color: var(--accent-green);
+      border: 1px solid rgba(0, 255, 178, 0.3);
+      padding: 4px 10px;
+      border-radius: 9999px;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .badge-cloud::before {
+      content: '';
+      width: 7px;
+      height: 7px;
+      background: var(--accent-green);
+      border-radius: 50%;
+      box-shadow: 0 0 8px var(--accent-green);
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.4; transform: scale(0.85); }
+      100% { opacity: 1; transform: scale(1); }
+    }
+
+    .header-meta {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      color: var(--text-muted);
+      text-align: right;
+    }
+
+    .metrics-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 16px;
+      margin-bottom: 28px;
+    }
+
+    .metric-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 14px;
+      padding: 20px;
+      backdrop-filter: blur(12px);
+      transition: all 0.2s ease;
+    }
+
+    .metric-card:hover {
+      border-color: var(--border-accent);
+      background: var(--bg-card-hover);
+      transform: translateY(-2px);
+    }
+
+    .metric-label {
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 8px;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .metric-value {
+      font-size: 28px;
+      font-weight: 700;
+      font-family: 'JetBrains Mono', monospace;
+      letter-spacing: -0.5px;
+    }
+
+    .metric-sub {
+      font-size: 12px;
+      margin-top: 6px;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .color-green { color: var(--accent-green); }
+    .color-red { color: var(--accent-red); }
+    .color-cyan { color: var(--accent-cyan); }
+    .color-yellow { color: var(--accent-yellow); }
+
+    .progress-bar-container {
+      margin-top: 10px;
+      height: 6px;
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: 999px;
+      overflow: hidden;
+    }
+
+    .progress-bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--accent-cyan), var(--accent-green));
+      border-radius: 999px;
+      transition: width 0.4s ease;
+    }
+
+    .section-title {
+      font-size: 16px;
+      font-weight: 600;
+      letter-spacing: -0.3px;
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--text-primary);
+    }
+
+    .positions-container {
+      margin-bottom: 28px;
+    }
+
+    .empty-state {
+      background: var(--bg-card);
+      border: 1px dashed var(--border-color);
+      border-radius: 14px;
+      padding: 36px 20px;
+      text-align: center;
+      color: var(--text-muted);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 13px;
+    }
+
+    .position-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 14px;
+      padding: 20px;
+      margin-bottom: 16px;
+      backdrop-filter: blur(12px);
+      border-left: 4px solid var(--accent-cyan);
+    }
+
+    .pos-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 14px;
+    }
+
+    .pos-symbol {
+      font-size: 20px;
+      font-weight: 700;
+      font-family: 'JetBrains Mono', monospace;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .pos-pnl {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 18px;
+      font-weight: 700;
+    }
+
+    .pos-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 12px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      margin-bottom: 14px;
+      padding: 12px;
+      background: rgba(0, 0, 0, 0.25);
+      border-radius: 8px;
+    }
+
+    .quant-audit-box {
+      background: rgba(10, 15, 25, 0.6);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      border-radius: 10px;
+      padding: 14px;
+      font-size: 12px;
+      margin-top: 12px;
+    }
+
+    .quant-pillar {
+      margin-bottom: 10px;
+    }
+
+    .quant-pillar:last-child {
+      margin-bottom: 0;
+    }
+
+    .pillar-heading {
+      font-weight: 600;
+      color: var(--accent-cyan);
+      margin-bottom: 4px;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .universe-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 28px;
+    }
+
+    .stock-pill {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 8px 14px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .stock-pill .ticker {
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+
+    .stock-pill .sector {
+      color: var(--text-muted);
+      font-size: 11px;
+    }
+
+    footer {
+      border-top: 1px solid var(--border-color);
+      padding-top: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 12px;
+      color: var(--text-muted);
+      font-family: 'JetBrains Mono', monospace;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    footer a {
+      color: var(--accent-cyan);
+      text-decoration: none;
+    }
+
+    footer a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div>
+        <div class="brand-title">
+          🛡️ Virtual Survival Engine
+          <span class="badge-cloud">AUTONOMOUS CLOUD 24/7</span>
+        </div>
+        <p style="color: var(--text-secondary); font-size: 13px; margin-top: 4px;">
+          Lead Quantitative Research & Zero-Risk US Equities Paper Trading Engine
+        </p>
+      </div>
+      <div class="header-meta">
+        <div>Microsoft Cloud Runner: <span style="color: var(--accent-green);">ACTIVE (Every 5–15m)</span></div>
+        <div id="last-sync" style="margin-top: 2px;">Syncing live ledger...</div>
+      </div>
+    </header>
+
+    <!-- METRICS OVERVIEW -->
+    <div class="metrics-grid">
+      <div class="metric-card">
+        <div class="metric-label">
+          <span>Portfolio Equity</span>
+          <span>USD</span>
+        </div>
+        <div class="metric-value" id="portfolio-val">$150.00</div>
+        <div class="metric-sub" id="pnl-pct">+0.00% vs $150 Base</div>
+        <div class="progress-bar-container">
+          <div class="progress-bar-fill" id="goal-progress" style="width: 30%;"></div>
+        </div>
+      </div>
+
+      <div class="metric-card">
+        <div class="metric-label">
+          <span>Liquid Cash Pool</span>
+          <span>AVAILABLE</span>
+        </div>
+        <div class="metric-value color-cyan" id="liquid-cash">$150.00</div>
+        <div class="metric-sub" id="cash-reserve-status">100% Cash Reserves</div>
+      </div>
+
+      <div class="metric-card">
+        <div class="metric-label">
+          <span>Peak Equity / Drawdown</span>
+          <span>RISK GATE</span>
+        </div>
+        <div class="metric-value" id="peak-val">$150.00</div>
+        <div class="metric-sub color-yellow" id="max-dd">Max DD: 0.00%</div>
+      </div>
+
+      <div class="metric-card">
+        <div class="metric-label">
+          <span>Exchange Fees Toll</span>
+          <span>0.1% TAKER + SLIPPAGE</span>
+        </div>
+        <div class="metric-value color-red" id="fees-paid">$0.000</div>
+        <div class="metric-sub color-green">Real Money Saved: ₹15,000</div>
+      </div>
+
+      <div class="metric-card">
+        <div class="metric-label">
+          <span>Trades & Win Rate</span>
+          <span>BAYESIAN</span>
+        </div>
+        <div class="metric-value color-green" id="win-rate">50.0%</div>
+        <div class="metric-sub" id="trades-count">0 Closed Trades</div>
+      </div>
+    </div>
+
+    <!-- MONITORED US EQUITIES UNIVERSE -->
+    <div class="section-title">
+      🏢 Monitored US Equities Universe (9 Mega-Cap High-Beta Tech Tickers)
+    </div>
+    <div class="universe-pills">
+      <div class="stock-pill"><span class="ticker">NVDA</span><span class="sector">Semiconductors / AI</span></div>
+      <div class="stock-pill"><span class="ticker">TSLA</span><span class="sector">EV & Autonomous Systems</span></div>
+      <div class="stock-pill"><span class="ticker">PLTR</span><span class="sector">Enterprise AI / Defense</span></div>
+      <div class="stock-pill"><span class="ticker">AMD</span><span class="sector">High-Performance Compute</span></div>
+      <div class="stock-pill"><span class="ticker">AAPL</span><span class="sector">Consumer Tech / Silicon</span></div>
+      <div class="stock-pill"><span class="ticker">MSFT</span><span class="sector">Cloud & Enterprise Software</span></div>
+      <div class="stock-pill"><span class="ticker">AMZN</span><span class="sector">AWS Infrastructure & Cloud</span></div>
+      <div class="stock-pill"><span class="ticker">GOOGL</span><span class="sector">Search & Gemini Cloud</span></div>
+      <div class="stock-pill"><span class="ticker">META</span><span class="sector">Llama Open Models & Social</span></div>
+    </div>
+
+    <!-- ACTIVE POSITIONS -->
+    <div class="positions-container">
+      <div class="section-title">
+        📈 Active Stock Positions & 4-Pillar Quantitative Audits
+      </div>
+      <div id="positions-list">
+        <div class="empty-state">
+          Scanning 9 US tech equities on continuous 60s micro-cycles...<br>
+          <span style="color: var(--accent-green); margin-top: 6px; display: inline-block;">
+            Zero low-conviction trades entered. Capital fully preserved.
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <!-- TRADE HISTORY -->
+    <div class="section-title">
+      📜 Closed Trade Execution Ledger
+    </div>
+    <div id="trades-history">
+      <div class="empty-state">
+        No realized trades yet. All simulated positions are held according to ATR targets.
+      </div>
+    </div>
+
+    <footer>
+      <div>
+        <span>Project: <a href="https://github.com/ashusatyarthi-wq/virtual-survival-engine" target="_blank">ashusatyarthi-wq/virtual-survival-engine</a></span>
+      </div>
+      <div>
+        <span>Engine: <code style="color: var(--accent-cyan);" id="engine-ver">v5.0_STOCKS_ONLY_QUANT</code></span>
+      </div>
+    </footer>
+  </div>
+
+  <script>
+    const LEDGER_URL = 'survival_ledger.json';
+
+    async function loadLedger() {
+      try {
+        const res = await fetch(`${LEDGER_URL}?t=${Date.now()}`);
+        if (!res.ok) throw new Error('Ledger not found');
+        const data = await res.json();
+        renderDashboard(data);
+      } catch (err) {
+        console.warn('Falling back to GitHub raw endpoint:', err);
+        try {
+          const rawUrl = 'https://raw.githubusercontent.com/ashusatyarthi-wq/virtual-survival-engine/main/survival_ledger.json';
+          const resRaw = await fetch(`${rawUrl}?t=${Date.now()}`);
+          if (resRaw.ok) {
+            const data = await resRaw.json();
+            renderDashboard(data);
+          }
+        } catch (e) {
+          document.getElementById('last-sync').innerText = 'Sync error: waiting for next cloud runner tick';
+        }
+      }
+    }
+
+    function renderDashboard(data) {
+      const portVal = data.portfolio_value || 150.0;
+      const initial = data.initial_capital || 150.0;
+      const liquid = data.liquid_cash || 150.0;
+      const peak = data.peak_portfolio_value || 150.0;
+      const maxDD = data.max_drawdown_pct || 0.0;
+      const fees = data.total_fees_paid || 0.0;
+      const stats = data.stats || {};
+      const winRate = (stats.win_rate ? stats.win_rate * 100 : 50.0).toFixed(1);
+      const totalTrades = stats.total_trades || 0;
+      const lastTime = data.last_cycle_time || 'Recent';
+
+      document.getElementById('portfolio-val').innerText = `$${portVal.toFixed(2)}`;
+      const pnlPct = ((portVal - initial) / initial) * 100;
+      const pnlElem = document.getElementById('pnl-pct');
+      pnlElem.innerText = `${pnlPct >= 0 ? '+' : ''}${pnlPct.toFixed(2)}% vs $${initial.toFixed(0)} Base`;
+      pnlElem.className = `metric-sub ${pnlPct >= 0 ? 'color-green' : 'color-red'}`;
+
+      document.getElementById('liquid-cash').innerText = `$${liquid.toFixed(2)}`;
+      document.getElementById('peak-val').innerText = `$${peak.toFixed(2)}`;
+      document.getElementById('max-dd').innerText = `Max DD: ${maxDD.toFixed(2)}%`;
+      document.getElementById('fees-paid').innerText = `$${fees.toFixed(3)}`;
+      document.getElementById('win-rate').innerText = `${winRate}%`;
+      document.getElementById('trades-count').innerText = `${totalTrades} Closed Trades (${stats.wins || 0}W / ${stats.losses || 0}L)`;
+      document.getElementById('last-sync').innerText = `Last Cloud Tick: ${lastTime} UTC`;
+      document.getElementById('engine-ver').innerText = data.version || 'v5.0_STOCKS_ONLY_QUANT';
+
+      const progress = Math.min(100, Math.max(0, (portVal / 500.0) * 100));
+      document.getElementById('goal-progress').style.width = `${progress}%`;
+
+      // Render Positions
+      const positionsContainer = document.getElementById('positions-list');
+      const positions = Object.values(data.positions || {});
+      if (positions.length === 0) {
+        positionsContainer.innerHTML = `
+          <div class="empty-state">
+            Scanning 9 US tech equities on continuous 60s micro-cycles...<br>
+            <span style="color: var(--accent-green); margin-top: 6px; display: inline-block;">
+              Zero low-conviction trades entered. Capital fully preserved in $150.00 cash reserves.
+            </span>
+          </div>`;
+      } else {
+        positionsContainer.innerHTML = positions.map(p => {
+          const audit = p.quantitative_audit || {};
+          const pnl = p.unrealized_pnl || 0.0;
+          const pnlPctPos = p.unrealized_pct || 0.0;
+          const isProfit = pnl >= 0;
+
+          return `
+            <div class="position-card">
+              <div class="pos-header">
+                <div class="pos-symbol">
+                  <span>${p.symbol}</span>
+                  <span class="badge-cloud" style="font-size: 10px;">US EQUITY</span>
+                </div>
+                <div class="pos-pnl ${isProfit ? 'color-green' : 'color-red'}">
+                  ${isProfit ? '+' : ''}$${pnl.toFixed(2)} (${isProfit ? '+' : ''}${pnlPctPos.toFixed(2)}%)
+                </div>
+              </div>
+
+              <div class="pos-grid">
+                <div>Entry: <strong>$${Number(p.entry_price).toFixed(2)}</strong></div>
+                <div>Current: <strong>$${Number(p.current_price || p.entry_price).toFixed(2)}</strong></div>
+                <div>Shares: <strong>${p.amount}</strong></div>
+                <div>Cost: <strong>$${Number(p.cost_basis).toFixed(2)}</strong></div>
+                <div>Stop Loss: <strong class="color-red">$${Number(p.stop_loss).toFixed(2)}</strong></div>
+                <div>Take Profit: <strong class="color-green">$${Number(p.take_profit).toFixed(2)}</strong></div>
+              </div>
+
+              ${audit.regime_identification ? `
+                <div class="quant-audit-box">
+                  <div class="quant-pillar">
+                    <div class="pillar-heading">📊 Regime Identification</div>
+                    <div style="color: var(--text-secondary);">${audit.regime_identification.market_context || 'Market Neutral'} | Macro Drivers: ${(audit.regime_identification.macro_drivers || []).join(' & ')}</div>
+                  </div>
+                  <div class="quant-pillar">
+                    <div class="pillar-heading">💡 Quantitative Signal Analysis</div>
+                    <div style="color: var(--text-secondary);">${audit.quantitative_signal_analysis?.primary_indicator_stack || ''} | Sentiment: <strong class="color-cyan">${audit.quantitative_signal_analysis?.sentiment_score}</strong> (${audit.quantitative_signal_analysis?.sentiment_justification || ''})</div>
+                  </div>
+                  <div class="quant-pillar">
+                    <div class="pillar-heading">📈 Risk Parameters</div>
+                    <div style="color: var(--text-secondary);">Entry: ${audit.risk_and_execution_parameters?.entry_zone || ''} | ATR Invalidation: $${audit.risk_and_execution_parameters?.invalidation_point_sl} | R:R: <strong class="color-green">${audit.risk_and_execution_parameters?.risk_reward_ratio}</strong></div>
+                  </div>
+                  <div class="quant-pillar">
+                    <div class="pillar-heading">⚠️ Anomaly Warning</div>
+                    <div style="color: var(--text-secondary);">${audit.regime_shift_and_anomaly_warning?.outlier_risk || 'Standard volatility threshold'}</div>
+                  </div>
+                </div>
+              ` : ''}
+            </div>
+          `;
+        }).join('');
+      }
+
+      // Render Trade History
+      const historyContainer = document.getElementById('trades-history');
+      const history = data.trade_history || [];
+      if (history.length === 0) {
+        historyContainer.innerHTML = `
+          <div class="empty-state">
+            No closed trades yet. Automated ATR trailing stops & targets active.
+          </div>`;
+      } else {
+        historyContainer.innerHTML = `
+          <div style="display: flex; flex-direction: column; gap: 8px;">
+            ${history.slice(-10).reverse().map(t => `
+              <div class="metric-card" style="padding: 12px 16px; display: flex; justify-content: space-between; align-items: center;">
+                <div style="font-family: 'JetBrains Mono', monospace; font-size: 13px;">
+                  <strong>${t.symbol}</strong> <span style="color: var(--text-muted); font-size: 11px;">${t.exit_time || ''}</span>
+                  <div style="font-size: 11px; color: var(--text-muted);">${t.exit_reason || 'EXIT'} @ $${t.exit_price}</div>
+                </div>
+                <div style="font-family: 'JetBrains Mono', monospace; text-align: right;">
+                  <div class="${t.realized_pnl >= 0 ? 'color-green' : 'color-red'}" style="font-weight: 700;">
+                    ${t.realized_pnl >= 0 ? '+' : ''}$${Number(t.realized_pnl).toFixed(2)} (${Number(t.realized_pct).toFixed(2)}%)
+                  </div>
+                  <div style="font-size: 11px; color: var(--text-muted);">Fee: $${Number(t.net_proceeds ? (t.amount * t.exit_price - t.net_proceeds) : 0).toFixed(3)}</div>
+                </div>
+              </div>
+            `).join('')}
+          </div>`;
+      }
+    }
+
+    loadLedger();
+    // Auto-refresh every 20 seconds
+    setInterval(loadLedger, 20000);
+  </script>
+</body>
+</html>

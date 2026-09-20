@@ -1,0 +1,39 @@
+{
+  "version": "5.0_STOCKS_ONLY_QUANT",
+  "project_name": "Project Virtual Survival  Paper Trading Engine",
+  "start_time": "2026-09-20 23:15:00",
+  "last_cycle_time": "2026-09-20 23:34:27",
+  "days_survived": 0,
+  "initial_capital": 150.0,
+  "portfolio_value": 150.0,
+  "liquid_cash": 150.0,
+  "peak_portfolio_value": 150.0,
+  "max_drawdown_pct": 0.0,
+  "total_fees_paid": 0.0,
+  "survival_rules": {
+    "weekly_overhead": 0.0,
+    "daily_overhead": 0.0,
+    "bankruptcy_floor": 0.0,
+    "max_risk_per_trade_pct": 3.5,
+    "spot_leverage": 1.0
+  },
+  "payouts": {
+    "total_paid_out": 0.0,
+    "history": [],
+    "next_payout_due": "2026-09-21 23:22:57"
+  },
+  "stats": {
+    "total_trades": 0,
+    "wins": 0,
+    "losses": 0,
+    "win_rate": 0.5,
+    "payoff_ratio": 2.0,
+    "kelly_fraction": 0.25,
+    "total_fees_paid": 0.0
+  },
+  "positions": {},
+  "trade_history": [],
+  "status": "ACTIVE_SURVIVING",
+  "engine_mode": "US_EQUITIES_QUANTITATIVE",
+  "asset_class": "EQUITIES"
+}
