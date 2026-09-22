@@ -2,13 +2,13 @@
   "version": "5.0_STOCKS_ONLY_QUANT",
   "project_name": "Project Virtual Survival  Paper Trading Engine",
   "start_time": "2026-09-20 23:15:00",
-  "last_cycle_time": "2026-09-20 23:34:27",
-  "days_survived": 0,
+  "last_cycle_time": "2026-09-22 06:49:56",
+  "days_survived": 1,
   "initial_capital": 150.0,
-  "portfolio_value": 150.0,
-  "liquid_cash": 150.0,
+  "portfolio_value": 149.9862,
+  "liquid_cash": 113.972,
   "peak_portfolio_value": 150.0,
-  "max_drawdown_pct": 0.0,
+  "max_drawdown_pct": 0.01,
   "total_fees_paid": 0.0,
   "survival_rules": {
     "weekly_overhead": 0.0,
@@ -19,8 +19,14 @@
   },
   "payouts": {
     "total_paid_out": 0.0,
-    "history": [],
-    "next_payout_due": "2026-09-21 23:22:57"
+    "history": [
+      {
+        "timestamp": "2026-09-21 23:29:45",
+        "amount": 0.0,
+        "reason": "$10/week survival burn ($1.43/day)"
+      }
+    ],
+    "next_payout_due": "2026-09-22 23:22:57"
   },
   "stats": {
     "total_trades": 0,
@@ -31,7 +37,102 @@
     "kelly_fraction": 0.25,
     "total_fees_paid": 0.0
   },
-  "positions": {},
+  "positions": {
+    "AAPL_1790022679": {
+      "id": "AAPL_1790022679",
+      "symbol": "AAPL",
+      "asset_class": "STOCK",
+      "side": "BUY",
+      "entry_time": "2026-09-21 20:31:19",
+      "entry_price": 338.98,
+      "amount": 0.0531,
+      "cost_basis": 18.009,
+      "stop_loss": 333.9,
+      "take_profit": 354.23,
+      "highest_price": 338.98,
+      "max_risk_dollars": 0.27,
+      "target_profit_dollars": 0.81,
+      "status": "OPEN",
+      "thesis": "STOCK Momentum Breakout EMA9>21>50 | RSI=59.7",
+      "current_price": 338.98,
+      "unrealized_pnl": 0.0,
+      "unrealized_pct": 0.0,
+      "quantitative_audit": {
+        "regime_identification": {
+          "market_context": "Bullish Momentum Trend",
+          "macro_drivers": [
+            "US Tech Volatility (Nasdaq 100/VIX)",
+            "Exchange Taker Volume Expansion"
+          ]
+        },
+        "quantitative_signal_analysis": {
+          "primary_indicator_stack": "EMA(9,21,50) + RSI(14)=71.0 + VolumeSurge=True",
+          "statistical_edge_rationale": "ATR(0.6759) expansion confirmed with non-linear trend alignment",
+          "sentiment_score": 0.84,
+          "sentiment_justification": "Grounded price action momentum with RSI at 71.0 and volume surge ratio 4.86x"
+        },
+        "risk_and_execution_parameters": {
+          "entry_zone": "$338.30 - $339.66",
+          "invalidation_point_sl": 333.9,
+          "target_matrix_tp": {
+            "t1_base": 340.33,
+            "t2_asymmetric": 354.23
+          },
+          "risk_reward_ratio": "1:3.0"
+        },
+        "regime_shift_and_anomaly_warning": {
+          "outlier_risk": "Immediate invalidation if ATR expands past 1.4870 on counter-trend volume spike or macro surprise"
+        }
+      }
+    },
+    "TSLA_1790022679": {
+      "id": "TSLA_1790022679",
+      "symbol": "TSLA",
+      "asset_class": "STOCK",
+      "side": "BUY",
+      "entry_time": "2026-09-21 20:31:19",
+      "entry_price": 375.3,
+      "amount": 0.048,
+      "cost_basis": 18.019000000000002,
+      "stop_loss": 369.67,
+      "take_profit": 392.19,
+      "highest_price": 375.3,
+      "max_risk_dollars": 0.27,
+      "target_profit_dollars": 0.81,
+      "status": "OPEN",
+      "thesis": "STOCK Momentum Breakout EMA9>21>50 | RSI=61.6",
+      "current_price": 375.3,
+      "unrealized_pnl": 0.0,
+      "unrealized_pct": 0.0,
+      "quantitative_audit": {
+        "regime_identification": {
+          "market_context": "Bullish Momentum Trend",
+          "macro_drivers": [
+            "US Tech Volatility (Nasdaq 100/VIX)",
+            "Exchange Taker Volume Expansion"
+          ]
+        },
+        "quantitative_signal_analysis": {
+          "primary_indicator_stack": "EMA(9,21,50) + RSI(14)=71.0 + VolumeSurge=True",
+          "statistical_edge_rationale": "ATR(1.0853) expansion confirmed with non-linear trend alignment",
+          "sentiment_score": 0.84,
+          "sentiment_justification": "Grounded price action momentum with RSI at 71.0 and volume surge ratio 4.86x"
+        },
+        "risk_and_execution_parameters": {
+          "entry_zone": "$374.55 - $376.05",
+          "invalidation_point_sl": 369.67,
+          "target_matrix_tp": {
+            "t1_base": 377.47,
+            "t2_asymmetric": 392.19
+          },
+          "risk_reward_ratio": "1:3.0"
+        },
+        "regime_shift_and_anomaly_warning": {
+          "outlier_risk": "Immediate invalidation if ATR expands past 2.3877 on counter-trend volume spike or macro surprise"
+        }
+      }
+    }
+  },
   "trade_history": [],
   "status": "ACTIVE_SURVIVING",
   "engine_mode": "US_EQUITIES_QUANTITATIVE",
