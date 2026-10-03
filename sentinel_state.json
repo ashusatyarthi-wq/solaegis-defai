@@ -1,20 +1,20 @@
 {
   "protocol": "SolAegis DeFAI Autonomous Sentinel",
   "version": "1.0.0",
-  "last_cycle_utc": "2026-10-03T19:33:43.428Z",
+  "last_cycle_utc": "2026-10-03T22:29:43.689Z",
   "status": "NOMINAL",
   "oracle": {
     "provider": "Pyth Network Hermes",
     "symbol": "SOL/USD",
     "price": 153.25,
     "confidence": 0.085,
-    "publish_time": 1791056023
+    "publish_time": 1791066583
   },
   "derivatives_market": {
     "provider": "Hyperliquid",
-    "mark_price": 119.68,
-    "funding_rate_8h": 0.0000088519,
-    "volume_24h": 84592014.8909002
+    "mark_price": 119.77,
+    "funding_rate_8h": 0.0000078951,
+    "volume_24h": 69412985.56899999
   },
   "risk_guards": {
     "half_kelly_allocation_usd": 404.26,
