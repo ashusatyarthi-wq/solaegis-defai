@@ -83,8 +83,8 @@ async function runAutonomousDiagnostic() {
   console.log("==================================================================");
 }
 
-// Run CLI diagnostic if directly executed
-const isDirectCli = process.argv[1]?.replace(/\\/g, "/").includes("src/index") || process.argv[1]?.replace(/\\/g, "/").includes("dist/index");
-if (isDirectCli || !process.env.VITEST) {
+// Run CLI diagnostic only if directly executed
+const isDirectCli = process.argv[1]?.replace(/\\/g, "/").endsWith("src/index.ts") || process.argv[1]?.replace(/\\/g, "/").endsWith("dist/index.js");
+if (isDirectCli && !process.env.VITEST) {
   runAutonomousDiagnostic().catch(console.error);
 }

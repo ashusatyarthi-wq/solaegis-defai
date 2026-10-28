@@ -7,6 +7,7 @@ import { CircuitBreaker, MarketTelemetry } from "../engine/circuit_breaker.js";
 import { SolanaConnector } from "../connectors/solana.js";
 import { HyperliquidConnector } from "../connectors/hyperliquid.js";
 import { PythOracleConnector } from "../connectors/pyth.js";
+import { AudaceFiConnector } from "../connectors/audacefi.js";
 
 const server = new Server(
   {
@@ -24,6 +25,7 @@ const solana = new SolanaConnector();
 const hyperliquid = new HyperliquidConnector();
 const pyth = new PythOracleConnector();
 const circuitBreaker = new CircuitBreaker();
+const audacefi = new AudaceFiConnector();
 
 server.setRequestHandler(ListToolsRequestSchema, async () => {
   return {
@@ -109,6 +111,53 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
           },
           required: ["symbol"]
         }
+      },
+      {
+        name: "audacefi_get_account",
+        description: "Inspects active AudaceFi league account, participant tier, connected Devnet wallet, and aura/standings.",
+        inputSchema: {
+          type: "object",
+          properties: {}
+        }
+      },
+      {
+        name: "audacefi_get_bench_config",
+        description: "Retrieves AudaceFi Solana devnet sandbox configuration including program ID, vault PDAs, and mainnet-to-devnet token mint twin mappings.",
+        inputSchema: {
+          type: "object",
+          properties: {}
+        }
+      },
+      {
+        name: "audacefi_get_market_prices",
+        description: "Fetches live token prices indexed via AudaceFi's Jupiter-backed price oracle.",
+        inputSchema: {
+          type: "object",
+          properties: {
+            mints: {
+              type: "array",
+              items: { type: "string" },
+              description: "Array of token mint addresses"
+            }
+          },
+          required: ["mints"]
+        }
+      },
+      {
+        name: "audacefi_plan_guarded_swap",
+        description: "Pre-execution risk validation for AudaceFi trading league: calculates Half-Kelly position sizing, ruin limits, and resolves devnet twin mints adhering to USDC routing rules.",
+        inputSchema: {
+          type: "object",
+          properties: {
+            tokenInMainnet: { type: "string", description: "Mainnet mint address of input token" },
+            tokenOutMainnet: { type: "string", description: "Mainnet mint address of output token" },
+            amountHuman: { type: "number", description: "Amount of input token in human units" },
+            portfolioCapitalUsd: { type: "number", description: "Total available capital in USD for sizing limits" },
+            stopLossPrice: { type: "number", description: "Optional stop loss price level" },
+            takeProfitPrice: { type: "number", description: "Optional target price level" }
+          },
+          required: ["tokenInMainnet", "tokenOutMainnet", "amountHuman"]
+        }
       }
     ]
   };
@@ -171,7 +220,6 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       const balanceSol = await solana.getSolBalance(address);
       const swapSol = args?.simulateSwapAmountSol ? Number(args.simulateSwapAmountSol) : 0.5;
       
-      // SOL to USDC Jupiter quote test
       const SOL_MINT = "So11111111111111111111111111111111111111112";
       const USDC_MINT = "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v";
       const quote = await solana.getJupiterQuote(SOL_MINT, USDC_MINT, Math.floor(swapSol * 1e9));
@@ -232,6 +280,101 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
           {
             type: "text",
             text: JSON.stringify(priceData, null, 2)
+          }
+        ]
+      };
+    }
+
+    if (name === "audacefi_get_account") {
+      const accountData = await audacefi.getAccount();
+      const wallet = accountData.wallets[0]?.address;
+      let solBalance = 0;
+      if (wallet) {
+        try {
+          solBalance = await audacefi.getSolBalance(wallet);
+        } catch {
+          solBalance = 0;
+        }
+      }
+      return {
+        content: [
+          {
+            type: "text",
+            text: JSON.stringify({ ...accountData, devnetSolBalance: solBalance }, null, 2)
+          }
+        ]
+      };
+    }
+
+    if (name === "audacefi_get_bench_config") {
+      const config = await audacefi.getBenchConfig();
+      return {
+        content: [
+          {
+            type: "text",
+            text: JSON.stringify(config, null, 2)
+          }
+        ]
+      };
+    }
+
+    if (name === "audacefi_get_market_prices") {
+      const mints = Array.isArray(args?.mints) ? (args.mints as string[]) : [];
+      if (mints.length === 0) {
+        throw new Error("mints must be a non-empty array of mint addresses");
+      }
+      const prices = await audacefi.getMarketPrices(mints);
+      return {
+        content: [
+          {
+            type: "text",
+            text: JSON.stringify(prices, null, 2)
+          }
+        ]
+      };
+    }
+
+    if (name === "audacefi_plan_guarded_swap") {
+      const tokenInMainnet = String(args?.tokenInMainnet);
+      const tokenOutMainnet = String(args?.tokenOutMainnet);
+      const amountHuman = Number(args?.amountHuman);
+
+      if (!tokenInMainnet || !tokenOutMainnet || !(amountHuman > 0)) {
+        throw new Error("tokenInMainnet, tokenOutMainnet, and positive amountHuman are required");
+      }
+
+      const bench = await audacefi.getBenchConfig();
+      const plan = audacefi.planBenchSwap(tokenInMainnet, tokenOutMainnet, amountHuman, bench);
+
+      if (!plan.ok) {
+        return {
+          isError: true,
+          content: [{ type: "text", text: `AudaceFi Bench Plan Error: ${plan.reason}` }]
+        };
+      }
+
+      const portfolioCapital = args?.portfolioCapitalUsd ? Number(args.portfolioCapitalUsd) : amountHuman * 4;
+      const positionRiskRatio = amountHuman / portfolioCapital;
+      const isKellyCompliant = positionRiskRatio <= 0.25;
+
+      return {
+        content: [
+          {
+            type: "text",
+            text: JSON.stringify(
+              {
+                plan,
+                guardrails: {
+                  portfolioCapitalUsd: portfolioCapital,
+                  positionAllocationPct: Number((positionRiskRatio * 100).toFixed(2)),
+                  maxCapPct: 25.0,
+                  isKellyCompliant,
+                  status: isKellyCompliant ? "APPROVED_FOR_BROADCAST" : "REJECTED_EXCEEDS_RUIN_CAP"
+                }
+              },
+              null,
+              2
+            )
           }
         ]
       };

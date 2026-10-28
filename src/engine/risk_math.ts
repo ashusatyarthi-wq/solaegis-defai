@@ -1,4 +1,4 @@
-﻿/**
+/**
  * SolAegis Quantitative Risk Mathematics Engine
  * Provides institutional-grade mathematical models for autonomous agent capital preservation.
  */
@@ -97,7 +97,7 @@ export class RiskMath {
     unrealizedPnlPct: number;
     action: "HOLD" | "UPDATE_STOP" | "TRIGGER_EXIT";
   } {
-    const unrealizedPnlPct = (currentPrice - entryPrice) / entryPrice;
+    const unrealizedPnlPct = entryPrice > 0 ? (currentPrice - entryPrice) / entryPrice : 0;
     
     // Check if current price breached stop
     if (currentPrice <= initialStopLoss) {
@@ -136,9 +136,22 @@ export class RiskMath {
    * Complete portfolio risk assessment.
    */
   public static analyzePositionRisk(config: PositionRiskConfig): RiskMetrics {
+    // Guard: prevent division by zero on degenerate inputs
+    if (config.entryPrice <= 0) {
+      throw new Error(`Invalid entryPrice: ${config.entryPrice}. Must be > 0.`);
+    }
+    if (config.portfolioCapitalUsd <= 0) {
+      throw new Error(`Invalid portfolioCapitalUsd: ${config.portfolioCapitalUsd}. Must be > 0.`);
+    }
+    if (config.volatilityDaily < 0 || config.volatilityDaily > 1) {
+      throw new Error(`Invalid volatilityDaily: ${config.volatilityDaily}. Must be in [0, 1].`);
+    }
+
     const profitTargetPct = Math.abs(config.takeProfitPrice - config.entryPrice) / config.entryPrice;
     const stopLossPct = Math.abs(config.entryPrice - config.stopLossPrice) / config.entryPrice;
-    const payoffRatio = stopLossPct > 0 ? profitTargetPct / stopLossPct : 1.5;
+
+    // When stop == entry, payoff ratio is undefined; default to a conservative 1.5
+    const payoffRatio = stopLossPct > 0.0001 ? profitTargetPct / stopLossPct : 1.5;
     const winProb = config.winProbabilityEstimate ?? 0.52;
 
     const kellyFraction = this.calculateKellyFraction(
@@ -151,14 +164,19 @@ export class RiskMath {
     const { varDollars } = this.calculateVaR(config.portfolioCapitalUsd, config.volatilityDaily, 1, 0.95);
     const cvarDollars = this.calculateCVaR(config.portfolioCapitalUsd, config.volatilityDaily, 1);
 
+    // Annualized volatility for Sharpe denominator; clamp to prevent division by zero
+    const annualizedVol = Math.max(config.volatilityDaily * Math.sqrt(252), 0.001);
+    // Downside risk for Sortino denominator: expected loss weighted by loss probability
+    const downsideRisk = Math.max(stopLossPct * (1 - winProb), 0.001);
+
     return {
       kellyFraction: Number(kellyFraction.toFixed(4)),
       recommendedPositionSizeUsd: Number(recommendedSize.toFixed(2)),
       valueAtRisk95Usd: varDollars,
       conditionalVaR95Usd: cvarDollars,
       maxDrawdownRiskPct: Number((stopLossPct * 100).toFixed(2)),
-      sharpeEstimate: Number(((profitTargetPct * winProb - stopLossPct * (1 - winProb)) / (config.volatilityDaily * Math.sqrt(252))).toFixed(2)),
-      sortinoEstimate: Number(((profitTargetPct * winProb) / (stopLossPct * (1 - winProb) + 0.0001)).toFixed(2))
+      sharpeEstimate: Number(((profitTargetPct * winProb - stopLossPct * (1 - winProb)) / annualizedVol).toFixed(2)),
+      sortinoEstimate: Number(((profitTargetPct * winProb) / downsideRisk).toFixed(2))
     };
   }
 }

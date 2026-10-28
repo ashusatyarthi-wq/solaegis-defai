@@ -1,4 +1,4 @@
-﻿/**
+/**
  * SolAegis Monte Carlo Stochastic Simulator
  * Geometric Brownian Motion with Jump-Diffusion for Crypto Market Shock Modeling.
  */
@@ -12,6 +12,7 @@ export interface SimulationParams {
   takeProfitPrice?: number;
   stopLossPrice?: number;
   positionSizeUsd: number;
+  seed?: number; // Optional seed for deterministic reproducibility
 }
 
 export interface SimulationResult {
@@ -30,11 +31,12 @@ export interface SimulationResult {
 export class MonteCarloSimulator {
   /**
    * Generates normally distributed random numbers via Box-Muller transform.
+   * Supports an optional linear congruential generator (LCG) when a seed is provided.
    */
-  private static boxMuller(): number {
+  private static boxMuller(randomFn: () => number = Math.random): number {
     let u = 0, v = 0;
-    while (u === 0) u = Math.random();
-    while (v === 0) v = Math.random();
+    while (u === 0) u = randomFn();
+    while (v === 0) v = randomFn();
     return Math.sqrt(-2.0 * Math.log(u)) * Math.cos(2.0 * Math.PI * v);
   }
 
@@ -42,6 +44,15 @@ export class MonteCarloSimulator {
    * Runs stochastic Monte Carlo simulation across N paths.
    */
   public static runSimulation(params: SimulationParams): SimulationResult {
+    let currentSeed = params.seed ?? null;
+    const randomFn = currentSeed !== null
+      ? () => {
+          // Deterministic LCG
+          currentSeed = (currentSeed! * 1664525 + 1013904223) % 4294967296;
+          return (currentSeed + 1) / 4294967297;
+        }
+      : Math.random;
+
     const trials = params.numTrials ?? 5000;
     const days = params.daysHorizon;
     const dt = 1 / 365; // daily step in annual units
@@ -67,11 +78,11 @@ export class MonteCarloSimulator {
 
       for (let day = 1; day <= days; day++) {
         if (!hitTp && !hitSl) {
-          const z = this.boxMuller();
-          // Jump diffusion component (occasional crypto tail event: 1% chance of -6% to +6% jump)
+          const z = this.boxMuller(randomFn);
+          // Jump diffusion component (occasional crypto tail event: 1.5% chance of -6% to +6% jump)
           let jump = 0;
-          if (Math.random() < 0.015) {
-            jump = (Math.random() - 0.5) * 0.12;
+          if (randomFn() < 0.015) {
+            jump = (randomFn() - 0.5) * 0.12;
           }
 
           const exponent = (drift - 0.5 * annualVol * annualVol) * dt + annualVol * Math.sqrt(dt) * z + jump;

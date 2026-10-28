@@ -1,4 +1,4 @@
-﻿/**
+/**
  * SolAegis Autonomous Circuit Breaker
  * On-chain sentinel that guards against flash crashes, oracle depegs, and liquidity drains.
  */
@@ -68,7 +68,12 @@ export class CircuitBreaker {
       }
     }
 
-    if (reasons.length >= 2 || reasons.some(r => r.includes("Flash crash") || r.includes("depeg"))) {
+    const isSevereStaleness = staleness > (this.config.oracleMaxStalenessSeconds * 3);
+    if (isSevereStaleness) {
+      reasons.push(`Critical oracle failure: feed is completely unmaintained (${staleness}s old)`);
+    }
+
+    if (reasons.length >= 2 || reasons.some(r => r.includes("Flash crash") || r.includes("depeg") || r.includes("Critical oracle failure"))) {
       return {
         isTripped: true,
         severity: "CRITICAL_HALT",
