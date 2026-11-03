@@ -11,6 +11,7 @@
     "build": "tsc",
     "start": "tsx src/index.ts",
     "mcp": "tsx src/mcp/server.ts",
+    "runner:audacefi": "tsx src/runners/audacefi_runner.ts",
     "test": "vitest run",
     "test:coverage": "vitest run --coverage"
   },
